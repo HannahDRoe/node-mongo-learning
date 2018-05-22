@@ -1,1 +1,2 @@
 mongoimport --db mongo-exercises --collection courses --drop --file exercise-data.json --jsonArray
+mongoimport --db vidly-app --collection genres --drop --file vidly-data.json --jsonArray

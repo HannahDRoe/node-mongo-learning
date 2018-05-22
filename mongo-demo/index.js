@@ -5,11 +5,46 @@ mongoose.connect('mongodb://localhost/playground')
     .catch(err => console.error('Could not connect to MongoDB', err))
 
 const courseSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String, 
+        required: true,
+        minlength: 5,
+        maxlength: 255,
+        // match: /pattern/
+    },
+    category :{
+        type: String,
+        required: true,
+        enum: ['web', 'mobile', 'network'],
+        lowercase: true,
+        // uppercase: true,
+        trim: true
+    },
     author: String,
-    tags: [ String ],
+    tags:{
+        type: Array,
+        validate:{
+            isAsync: true,
+            validator: function (value, callback) {
+                setTimeout(() => {
+                    // Do async work
+                    const result = value && value.length > 0; 
+                    callback(result)
+                }, 4000);
+            },
+            message: 'A course should have at least one tag'
+        }
+    },
     date: {type: Date, default: Date.now},
-    isPublished: Boolean
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function(){  return this.isPublished},
+        min: 10,
+        max: 200,
+        get: v => Math.round(v),
+        set: v => Math.round(v)
+    }
 });
 
 const Course = mongoose.model('Course', courseSchema);
@@ -17,13 +52,23 @@ const Course = mongoose.model('Course', courseSchema);
 async function createCourse() {
     const course = new Course({
         name: 'Angular course',
+        category: 'WEB',
         author: 'Mosh',
-        tags: ['angular', 'frontend'],
-        isPublished: true
+        tags: ['frontend'],
+        isPublished: true,
+        price: 15.8888
     });
     
-    const result = await course.save();
-    console.log(result)
+    try{
+        const result = await course.save();
+        console.log(result)
+    }catch (ex){
+        for (field in ex.errors) {
+            console.log(ex.errors[field].message);
+        }
+
+    }
+
 }
 // createCourse();
 async function getCourses(){
@@ -31,13 +76,13 @@ async function getCourses(){
     const pageSize = 10;
 
     const courses = await Course
-        .find({author: 'Mosh', isPublished: true })
-        .skip((pageNumber-1)* pageSize)
-        .limit(pageSize)
+        .find({_id: '5afcb0a129b63504d8231be8'})
+        // .skip((pageNumber-1)* pageSize)
+        // .limit(pageSize)
         .sort({ name: 1})
-        .select({ name: 1, tags: 1})
+        .select({ name: 1, tags: 1, price: 1})
         // .count();
-   console.log(courses);
+   console.log(courses[0].price);
 }
 // getCourses();
 
@@ -89,4 +134,6 @@ async function removeCourse(id){
 }
 
 
-removeCourse('5af3827d557ff60340e13231');
+// removeCourse('5af3827d557ff60340e13231');
+// createCourse();
+getCourses();
