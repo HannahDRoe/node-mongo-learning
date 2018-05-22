@@ -1,0 +1,1 @@
+mongoimport --db vidly-app --collection genres --drop --file vidly-data.json --jsonArray
