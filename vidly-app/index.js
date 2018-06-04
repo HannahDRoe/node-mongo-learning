@@ -5,6 +5,7 @@ const app = express();
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const home = require('./routes/home');
+const movies = require('./routes/movies');
 
 
 mongoose.connect('mongodb://localhost/vidly-app')
@@ -15,7 +16,8 @@ mongoose.connect('mongodb://localhost/vidly-app')
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use('/api/genres', genres);
-app.use('/api/customers', customers)
+app.use('/api/customers', customers);
+app.use('/api/movies', movies);
 app.use('/', home);
 
 //setting up port
