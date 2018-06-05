@@ -19,3 +19,10 @@ console.log(id.getTimestamp());
 
 const isValid = mongoose.Types.ObjectId.isValid('12345');
 console.log(isValid)
+
+
+
+// Error if id passed is not a valid objectId (1234) is passed to our Vidly app's rental api
+// CastError: Cast to ObjectId failed for value "1234"  at path "_id" for model Customer
+// path = chain of properties
+// Mongo couldn't pass 1234 to objectId becasue it wasnt valid objectId
